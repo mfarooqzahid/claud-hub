@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Claude Hub</title>
+  </head>
+  <body>
+    <div class="head">
+      <span class="brand"><span class="logo">C</span> Claude Hub</span>
+      <button id="sync" class="icon" title="Import each profile's session">⟳</button>
+      <button id="refresh" class="icon" title="Refresh">↻</button>
+    </div>
+
+    <label class="carry">
+      <input type="checkbox" id="carry" checked />
+      Carry the current conversation when switching account
+    </label>
+
+    <div class="settings">
+      <label class="carry">
+        <input type="checkbox" id="rail-visible" checked />
+        Show the account dock on claude.ai
+      </label>
+      <div class="positions" id="positions">
+        <button type="button" data-pos="top">Top</button>
+        <button type="button" data-pos="left">Left</button>
+        <button type="button" data-pos="right">Right</button>
+        <button type="button" data-pos="bottom">Bottom</button>
+      </div>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="accounts" class="accounts"></div>
+    <pre id="diagnostics" class="diagnostics" hidden></pre>
+    <div class="foot">
+      <span>Local-only · sessions stored in this profile</span>
+      <button id="diagnose" class="iconbtn" title="Diagnose" aria-label="Diagnose">ⓘ</button>
+      <button id="reset" class="iconbtn" title="Reset all data" aria-label="Reset all data">⟲</button>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

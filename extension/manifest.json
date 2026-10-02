@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Hub",
+  "version": "0.8.4",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Ub0c9ykeh9Yle5k6/vw3laxEfroztQilUs/L8UdgEHIHOKm6ivlWqXKYknXcM704dxOM5CRmOzlk6FkQpC5H5fupP66B+6FvqcYjWwXJCKVWwQq0ad7Xj2u7T0A0Cybx2No+/xkQRZHFTOCGYcZWkwpfL4FXFQXrHJ/Dwe2pRgk6fgHCx5RBofy4pvebWYHEISXHx6uSfQqWD4b6FGhsF86RgqvvC2Lyvm6SJxc1uKpwVHeC1UQEBqUwx3c3s1p9bhwWXV8/JV0hWXi4nr79bH2ONDaNtzVjQTfkuv/U/rQZdQXAAfWz0A4Y7QXvbmbSipBz7WjJJv7tlkRwO4nPQIDAQAB",
+  "description": "Switch between Claude accounts in one profile and carry the conversation over. Fully local, no server.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["cookies", "tabs", "storage", "scripting", "nativeMessaging", "clipboardWrite"],
+  "host_permissions": ["https://claude.ai/*", "https://*.claude.ai/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Claude Hub",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

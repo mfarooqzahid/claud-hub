@@ -1,0 +1,20 @@
+# Local secrets and stray data — never commit
+.env
+.env.*
+data/
+*.db
+*.sqlite3
+*.db-wal
+*.db-shm
+
+# Python (native-host)
+__pycache__/
+*.py[cod]
+native-host/build/
+native-host/claude-hub-host
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
