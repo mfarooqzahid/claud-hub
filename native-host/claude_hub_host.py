@@ -14,10 +14,9 @@ prefix followed by UTF-8 JSON, on stdin/stdout.
 Commands (JSON `type`):
   ping           -> {ok, host, version}
   listProfiles   -> {ok, profiles: [...]}
-  readSession    -> {ok, sessionKey}   (body: profileId)
-  readCookies    -> {ok, cookies, sessionKey}   (body: profileId)
   readAllCookies -> {ok, profiles: [{id, …, cookies}]}   (every signed-in profile)
   openProfile    -> {ok}               (body: profileId, url?)
+  writeTransfer / readTransfer / clearTransfer  (cross-profile context relay)
 
 Run `python3 claude_hub_host.py --list` to test discovery without Chrome.
 """
@@ -117,36 +116,12 @@ def _local_state_info(user_data: Path) -> dict:
         return {}
 
 
-def _last_used_profile(user_data: Path) -> str | None:
-    """The profile Chrome most recently ran (from Local State)."""
-    try:
-        data = json.loads(
-            (user_data / "Local State").read_text(encoding="utf-8", errors="ignore")
-        )
-        return (data.get("profile", {}) or {}).get("last_used")
-    except Exception:
-        return None
-
-
-def _profile_has_extension(profile_dir: Path, extension_id: str | None) -> bool:
-    """Is this the Chrome profile Claude Hub is loaded in?
-
-    chrome.storage.local for an unpacked extension lives in
-    <profile>/Local Extension Settings/<id>/, so its presence identifies the
-    hub profile. We only check for the directory; nothing is read from it.
-    """
-    if not extension_id:
-        return False
-    return (profile_dir / "Local Extension Settings" / extension_id).is_dir()
-
-
-def discover_profiles(extension_id: str | None = None) -> list[dict]:
+def discover_profiles() -> list[dict]:
     profiles: list[dict] = []
     for user_data, browser_key, browser_label in user_data_dirs():
         if not user_data.is_dir():
             continue
         info = _local_state_info(user_data)
-        last_used = _last_used_profile(user_data)
         for entry in sorted(user_data.iterdir()):
             if not entry.is_dir():
                 continue
@@ -177,8 +152,6 @@ def discover_profiles(extension_id: str | None = None) -> list[dict]:
                     "email": meta.get("user_name") or None,
                     "has_session": signed_in and session_id is not None,
                     "session_id": session_id,
-                    "is_current": name == last_used,
-                    "has_extension": _profile_has_extension(entry, extension_id),
                 }
             )
     return profiles
@@ -209,19 +182,6 @@ def has_session_cookie(cookies_path: Path) -> bool:
             tmp.unlink(missing_ok=True)
     except Exception:
         return False
-
-
-def read_session(profile_id: str) -> str | None:
-    """Decrypt and return the claude.ai sessionKey for a profile id."""
-    browser_key, _, profile = profile_id.partition(":")
-    for user_data, candidate_key, _ in user_data_dirs():
-        if candidate_key != browser_key:
-            continue
-        cookies = _cookies_file(user_data / profile)
-        if cookies is None:
-            return None
-        return _decrypt_session(cookies)
-    return None
 
 
 def _decrypt_session(cookies_path: Path) -> str | None:
@@ -429,29 +389,7 @@ def handle(message: dict) -> dict:
     if command == "ping":
         return {"ok": True, "host": HOST_NAME, "version": VERSION}
     if command == "listProfiles":
-        return {
-            "ok": True,
-            "profiles": discover_profiles(message.get("extensionId")),
-        }
-    if command == "readSession":
-        value = read_session(message.get("profileId") or "")
-        if not value:
-            return {
-                "ok": False,
-                "error": "No claude.ai session found in that Chrome profile.",
-            }
-        return {"ok": True, "sessionKey": value}
-    if command == "readCookies":
-        cookies = read_cookies(message.get("profileId") or "")
-        if not cookies:
-            return {
-                "ok": False,
-                "error": "No claude.ai cookies found in that Chrome profile.",
-            }
-        session_key = next(
-            (c["value"] for c in cookies if c["name"] == SESSION_COOKIE), None
-        )
-        return {"ok": True, "cookies": cookies, "sessionKey": session_key}
+        return {"ok": True, "profiles": discover_profiles()}
     if command == "readAllCookies":
         return {"ok": True, "profiles": read_all_cookies()}
     if command == "openProfile":

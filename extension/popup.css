@@ -131,15 +131,6 @@ body {
   padding: 4px 8px 8px;
 }
 
-.section-title {
-  padding: 12px 8px 2px;
-  color: var(--faint);
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .item {
   display: flex;
   align-items: center;
@@ -178,23 +169,6 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-button.switch {
-  background: var(--elevated);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 7px;
-  padding: 4px 10px;
-  cursor: pointer;
-  font-size: 12px;
-}
-button.switch:hover {
-  border-color: var(--accent);
-}
-button.switch:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 button.iconbtn {
@@ -255,18 +229,6 @@ button.iconbtn.armed {
   border-top: 1px solid var(--border);
   color: var(--faint);
   font-size: 11px;
-}
-button.linkbtn {
-  background: transparent;
-  border: none;
-  color: var(--faint);
-  cursor: pointer;
-  font-size: 11px;
-  padding: 0;
-  text-decoration: underline;
-}
-button.linkbtn:hover {
-  color: #f0a2a8;
 }
 
 .empty {

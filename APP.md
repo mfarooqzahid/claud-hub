@@ -174,9 +174,8 @@ Messages (`type`):
 | Command | Returns |
 | --- | --- |
 | `ping` | `{ok, host, version}` |
-| `listProfiles` | `{ok, profiles:[{id, browser, label, email, has_session, session_id, is_current, has_extension}]}` |
+| `listProfiles` | `{ok, profiles:[{id, browser, label, email, has_session, session_id}]}` |
 | `readAllCookies` | `{ok, profiles:[{id, …, session_id, cookies:[…]}]}` — every signed-in profile in one pass |
-| `readCookies` / `readSession` | single profile (diagnostics) |
 | `openProfile` | launches Chrome for a `profileId` (+ optional `url`) |
 | `writeTransfer` / `readTransfer` / `clearTransfer` | cross-profile context relay |
 

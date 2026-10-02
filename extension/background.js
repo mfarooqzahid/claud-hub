@@ -247,10 +247,7 @@ async function getChromeProfiles() {
   if (Date.now() - profileCache.at < 15000 && profileCache.at !== 0) {
     return profileCache
   }
-  const response = await nativeSend({
-    type: 'listProfiles',
-    extensionId: chrome.runtime.id,
-  })
+  const response = await nativeSend({ type: 'listProfiles' })
   const available = Boolean(response && response.ok)
   const profiles = available
     ? (response.profiles || [])
@@ -264,8 +261,6 @@ async function getChromeProfiles() {
           email: profile.email,
           hasSession: profile.has_session,
           sessionId: profile.session_id || null,
-          isCurrentProfile: Boolean(profile.is_current),
-          hasExtension: Boolean(profile.has_extension),
         }))
     : []
   profileCache = { at: Date.now(), value: profiles, available }
@@ -593,7 +588,6 @@ async function buildState() {
       title,
       subtitle,
       isCurrent,
-      isHost: Boolean(profile.hasExtension),
       hasAccount: Boolean(account),
       status,
       action: canSwitch ? 'switch' : 'signin',
@@ -724,14 +718,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'state') {
     buildState()
       .then((data) => sendResponse({ ok: true, data }))
-      .catch((err) => sendResponse({ ok: false, error: String(err) }))
-    return true
-  }
-
-  if (message.type === 'prepareOpen') {
-    const tabId = sender.tab ? sender.tab.id : null
-    prepareOpen({ carry: message.carry, sourceLabel: message.sourceLabel, tabId })
-      .then((result) => sendResponse({ ok: true, ...result }))
       .catch((err) => sendResponse({ ok: false, error: String(err) }))
     return true
   }

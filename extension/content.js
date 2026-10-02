@@ -729,26 +729,6 @@
         .catch((err) => sendResponse({ ok: false, error: String(err) }))
       return true
     }
-    if (message && message.type === 'identify') {
-      identifyAccount()
-        .then((data) => sendResponse({ ok: true, data }))
-        .catch(() => sendResponse({ ok: true, data: null }))
-      return true
-    }
-    if (message && message.type === 'insert') {
-      ensureInserted(message.text)
-        .then((result) =>
-          sendResponse({ ok: result === 'stable' || result === 'user' }),
-        )
-        .catch(() => sendResponse({ ok: false }))
-      return true
-    }
-    if (message && message.type === 'resume') {
-      resumePendingTransfer()
-        .then(() => sendResponse({ ok: true }))
-        .catch(() => sendResponse({ ok: false }))
-      return true
-    }
     if (message && message.type === 'sidebar:refresh') {
       scheduleRender()
       sendResponse({ ok: true })
